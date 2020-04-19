@@ -37,22 +37,32 @@ function showroot() {
     fi
 }
 
-# first line
-# [ user@host, pwd, git branch & status ], spacer, [ jobs, timestamp ]
+# draw output marker
+function showmarker() {
+    local mchar=${ANTSY_MARKER_CHAR:-"─"}
+    echo "%B%F{black}$(repeat $COLUMNS printf "$mchar")%f%b"
+}
+
 function precmd(){
 
-    # left side
+    # output marker
+    if [[ -v ANTSY_SHOW_MARKER ]]; then
+        print -Pr "$(showmarker)"
+    fi
+
+    # first line left
     local preprompt_left="%B%F{green}$(showroot)%n%F{green}@%m %B%F{blue}%47<...<%~%<<% %B%F{red}%(?..%? ↵) $(git_prompt_info)%B%F{red}$(git_prompt_status)%f%b"
 
-    # right side
+    # first line right
     local preprompt_right="%B$(showjobs)%F{black}%D{%H:%M:%S}%f%b"
 
-    # calculate spaces
+    # calculate spacer
     local preprompt_left_length=${#${(S%%)preprompt_left//(\%([KF1]|)\{*\}|\%[Bbkf])}}
     local preprompt_right_length=${#${(S%%)preprompt_right//(\%([KF1]|)\{*\}|\%[Bbkf])}}
     local num_filler_spaces=$((COLUMNS - preprompt_left_length - preprompt_right_length))
 
     # display
+    # [ user@host, pwd, git branch & status ], spacer, [ jobs, timestamp ]
     print -Pr "$preprompt_left${(l:$num_filler_spaces:)}$preprompt_right"
 }
 

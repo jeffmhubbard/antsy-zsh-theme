@@ -22,8 +22,12 @@ ZSH_THEME_VIRTUALENV_SUFFIX=") "
 # vi-mode
 MODE_INDICATOR="%F{cyan}"
 
+# output marker
+MARKER_CHAR="─" # U+2500
+MARKER_COLOR="%B%F{black}"
+
 # jobs count
-function showjobs() {
+function _show_jobs {
     local running=$(jobs -l | wc -l)
     if [[ $running -ne 0 ]]; then
         echo "%F{yellow} $running%f "
@@ -31,30 +35,45 @@ function showjobs() {
 }
 
 # detect root
-function showroot() {
+function _show_root {
     if [ $UID -eq 0 ]; then
         echo "%F{red}"
     fi
 }
 
 # draw output marker
-function showmarker() {
-    local mchar=${ANTSY_MARKER_CHAR:-"─"}
-    echo "%B%F{black}$(repeat $COLUMNS printf "$mchar")%f%b"
+function _show_marker {
+    local char=${ANTSY_MARKER_CHAR:-$MARKER_CHAR}
+    local color=${ANTSY_MARKER_COLOR:-$MARKER_COLOR}
+    local width=$COLUMNS
+    local marker marker_prefix
+
+    local char_len=$(echo -n $char | wc -m)
+    if [[ $char_len -gt 1 ]]; then
+        local prefix_len=$(($char_len - 1))
+        width=$(($width - $prefix_len))
+        marker_prefix=$char[1,$prefix_len]
+        marker=${char/$marker_prefix/}
+    else
+        marker_prefix=""
+        marker=$char
+    fi
+
+    echo "${color}${marker_prefix}$(repeat $width printf "$marker")%f%b"
 }
 
 function precmd(){
 
     # output marker
     if [[ -v ANTSY_SHOW_MARKER ]]; then
-        print -Pr "$(showmarker)"
+        print -Pr "$(_show_marker)"
     fi
 
     # first line left
-    local preprompt_left="%B%F{green}$(showroot)%n%F{green}@%m %B%F{blue}%47<...<%~%<<% %B%F{red}%(?..%? ↵) $(git_prompt_info)%B%F{red}$(git_prompt_status)%f%b"
+    local preprompt_left="%B%F{green}$(_show_root)%n%F{green}@%m %B%F{blue}%47<...<%~%<<% %B%F{red}%(?..%? ↵) $(git_prompt_info)%B%F{red}$(git_prompt_status)%f%b"
 
     # first line right
-    local preprompt_right="%B$(showjobs)%F{black}%D{%H:%M:%S}%f%b"
+    local preprompt_right="%B$(_show_jobs)%F{black}%D{%H:%M:%S}%f%b"
 
     # calculate spacer
     local preprompt_left_length=${#${(S%%)preprompt_left//(\%([KF1]|)\{*\}|\%[Bbkf])}}

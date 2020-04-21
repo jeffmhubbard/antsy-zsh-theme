@@ -87,10 +87,15 @@ function _antsy_path {
 # show git info (branch and status)
 function _antsy_gitinfo {
     local icon color
+    local branch state
+    branch=$(git_prompt_info)
+    state=$(git_prompt_status)
     icon=${ANTSY_GIT_ICON:-$GIT_ICON}
     color=${ANTSY_GIT_COLOR:-$GIT_COLOR}
 
-    echo "${color}${icon}$(git_prompt_info)$(git_prompt_status)%f "
+    if [[ -n $branch ]]; then
+        echo "${color}${icon}${branch}${state}%f "
+    fi
 }
 
 # show background jobs
@@ -202,6 +207,7 @@ function precmd {
         print -Pr "$(_antsy_marker)"
     fi
 
+    # [ user@host, pwd, git branch & status ], spacer, [ jobs, timestamp ]
     # first line left
     prompt_left="%B$(_antsy_userhost)$(_antsy_path)$(_antsy_gitinfo)%b"
 
@@ -213,16 +219,14 @@ function precmd {
     spacer=$((COLUMNS - left_length - right_length))
 
     # display
-    # [ user@host, pwd, git branch & status ], spacer, [ jobs, timestamp ]
     print -Pr "$prompt_left${(l:$spacer:)}$prompt_right"
 }
 
+# [ virtualenv, vi-mode, prompt ], input, [ exit code ]
 # second line left
-# virtualenv, vi-mode, prompt
 PS1='%B$(_antsy_virtualenv)$(_antsy_vimode)$(_antsy_prompt)%b'
 
 # second line right
-# exit code
 RPS1="%B$(_antsy_status)%b"
 
 # continuation dots

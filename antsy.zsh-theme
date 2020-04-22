@@ -122,11 +122,13 @@ function _antsy_timestamp {
 # show python virtualenv
 function _antsy_virtualenv {
     local icon color venv
-    color=${ANTSY_VENV_ICON:-$VENV_ICON}
+    icon=${ANTSY_VENV_ICON:-$VENV_ICON}
     color=${ANTSY_VENV_COLOR:-$VENV_COLOR}
     venv="$(virtualenv_prompt_info | sed 's/[\)\(]//g')"
 
-    echo "${color}${icon}${venv}%f"
+    if [[ -n $venv ]]; then
+        echo "${color}${icon}${venv}%f "
+    fi
 }
 
 # show vi-mode

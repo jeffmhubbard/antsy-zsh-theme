@@ -8,6 +8,10 @@ Intended to be used with a dark, 16-color terminal theme. I use the [Terminal.ap
 
 [![asciicast](https://asciinema.org/a/311469.svg)](https://asciinema.org/a/311469)
 
+#### Configuration
+
+Further customization can be done by setting these enviroment variables in `.zshrc`
+
 ```sh
 # default
 ANTSY_HOST_ICON=""
@@ -39,3 +43,7 @@ ANTSY_SELECT_COLOR="%B%F{white}"
 ANTSY_MARKER_ICON="─" # U+2500
 ANTSY_MARKER_COLOR="%B%F{black}"
 ```
+
+* `ANTSY_MARKER_ICON` can be multiple characters, but the last character will be repeated to the right side of the terminal.
+
+

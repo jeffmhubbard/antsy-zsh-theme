@@ -1,6 +1,6 @@
 # antsy.zsh-theme
 #
-# required plugins: git virtualenv vi-mode
+# optional plugins: git virtualenv vi-mode
 
 # defaults
 HOST_ICON=${ANTSY_HOST_ICON:-""}
@@ -10,7 +10,7 @@ ROOT_COLOR=${ANTSY_ROOT_COLOR:-"%B%F{red}"}
 PATH_ICON=${ANTSY_PATH_ICON:-""}
 PATH_COLOR=${ANTSY_PATH_COLOR:-"%B%F{blue}"}
 PATH_FORMAT=${ANTSY_PATH_FORMAT:-"%47<...<%~%<<% "}
-GIT_ICON=${ANTSY_GIT_ICON:-' '}
+GIT_ICON=${ANTSY_GIT_ICON:-" "}
 GIT_COLOR=${ANTSY_GIT_COLOR:-"%B%F{red}"}
 JOBS_ICON=${ANTSY_JOBS_ICON:-" "}
 JOBS_COLOR=${ANTSY_JOBS_COLOR:-"%B%F{yellow}"}
@@ -20,6 +20,7 @@ VENV_ICON=${ANTSY_VENV_ICON:-""}
 VENV_COLOR=${ANTSY_VENV_COLOR:-"%B%F{cyan}"}
 VIM_ICON=${ANTSY_VIM_ICON:-"➜"}
 VIM_COLOR=${ANTSY_VIM_COLOR:-"%B%F{white}"}
+VIM_COLOR_ALT=${ANTSY_VIM_COLOR_ALT:-"%F{cyan}"}
 PROMPT_ICON=${ANTSY_PROMPT_ICON:-"%#"}
 PROMPT_COLOR=${ANTSY_PROMPT_COLOR:-"%B%F{white}"}
 STATUS_ICON=${ANTSY_STATUS_ICON:-"↵"}
@@ -48,7 +49,8 @@ ZSH_THEME_VIRTUALENV_PREFIX="("
 ZSH_THEME_VIRTUALENV_SUFFIX=")"
 
 # vi-mode
-MODE_INDICATOR="%F{cyan}"
+MODE_INDICATOR=${VIM_COLOR_ALT}
+
 
 # end string format
 typeset -g endf="%f%b"
@@ -80,7 +82,7 @@ function _antsy_username {
 
 # show current path
 function _antsy_path {
-    local icon color
+    local icon color pathfmt
     icon=${PATH_ICON}
     color=${PATH_COLOR}
     pathfmt=${PATH_FORMAT}
@@ -90,13 +92,13 @@ function _antsy_path {
 
 # show git info (branch and status)
 function _antsy_gitinfo {
-    if [[ ${plugins[(ie)git]} -le ${#plugins} ]]; then
+    if typeset -f git_prompt_info >/dev/null; then
         local icon color
         local branch state
-        branch=$(git_prompt_info)
-        state=$(git_prompt_status)
         icon=${GIT_ICON}
         color=${GIT_COLOR}
+        branch=$(git_prompt_info)
+        state=$(git_prompt_status)
 
         if [[ -n $branch ]]; then
             echo "${color}${icon}${branch}${state}${endf} "
@@ -127,9 +129,9 @@ function _antsy_timestamp {
 
 # show python virtualenv
 function _antsy_virtualenv {
-    if [[ ${plugins[(ie)virtualenv]} -le ${#plugins} ]]; then
+    if typeset -f virtualenv_prompt_info >/dev/null; then
         local icon color venv
-        color=${VENV_ICON}
+        icon=${VENV_ICON}
         color=${VENV_COLOR}
         venv="$(virtualenv_prompt_info | sed 's/[\)\(]//g')"
 
@@ -141,10 +143,11 @@ function _antsy_virtualenv {
 
 # show vi-mode
 function _antsy_vimode {
-    if [[ ${plugins[(ie)vi-mode]} -le ${#plugins} ]]; then
-        local icon color
+    if typeset -f vi_mode_prompt_info >/dev/null; then
+        local icon color color_alt
         icon=${VIM_ICON}
         color=${VIM_COLOR}
+        color_alt=${MODE_INDICATOR}
 
         echo "${color}$(vi_mode_prompt_info)${icon}${endf} "
     fi
@@ -191,7 +194,7 @@ function _antsy_marker {
     local icon color width
     local icon_len prefix_len
     local marker marker_prefix
-    icon=${ANTSY_MARKER_ICON:-""}
+    icon=${ANTSY_MARKER_ICON}
     color=${MARKER_COLOR}
     width=$COLUMNS
     icon_len=$(echo -n "$icon" | wc -m)
@@ -236,15 +239,15 @@ function precmd {
 
 # [ virtualenv, vi-mode, prompt ], input, [ exit code ]
 # second line left
-PS1="$(_antsy_virtualenv)$(_antsy_vimode)$(_antsy_prompt)"
+PS1='$(_antsy_virtualenv)$(_antsy_vimode)$(_antsy_prompt)'
 
 # second line right
-RPS1="$(_antsy_status)"
+RPS1='$(_antsy_status)'
 
 # continuation dots
-PS2="$(_antsy_continue)"
+PS2='$(_antsy_continue)'
 
 # select
-PS3="$(_antsy_select)"
+PS3='$(_antsy_select)'
 
 # vim: set ft=zsh:

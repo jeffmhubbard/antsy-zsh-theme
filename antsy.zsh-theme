@@ -9,7 +9,7 @@ ROOT_ICON=${ANTSY_ROOT_ICON:-""}
 ROOT_COLOR=${ANTSY_ROOT_COLOR:-"%B%F{red}"}
 PATH_ICON=${ANTSY_PATH_ICON:-""}
 PATH_COLOR=${ANTSY_PATH_COLOR:-"%B%F{blue}"}
-PATH_FORMAT=${ANTSY_PATH_FORMAT:-"%47<...<%~%<<% "}
+PATH_FORMAT=${ANTSY_PATH_FORMAT:-"%3~"}
 GIT_ICON=${ANTSY_GIT_ICON:-" "}
 GIT_COLOR=${ANTSY_GIT_COLOR:-"%B%F{red}"}
 JOBS_ICON=${ANTSY_JOBS_ICON:-" "}
@@ -51,7 +51,6 @@ ZSH_THEME_VIRTUALENV_SUFFIX=")"
 # vi-mode
 MODE_INDICATOR=${VIM_COLOR_ALT}
 
-
 # end string format
 typeset -g endf="%f%b"
 
@@ -60,14 +59,14 @@ function _antsy_userhost {
     local icon color user host
     icon=${HOST_ICON}
     color=${HOST_COLOR}
-    user="${color}$(_antsy_username)%n"
+    user="${color}$(_fmt_username)%n"
     host="${color}@%m"
 
     echo "${user}${host}${endf} "
 }
 
 # returns user or root
-function _antsy_username {
+function _fmt_username {
     local icon color icon_root
     icon=${HOST_ICON}
     color=${ROOT_COLOR}
@@ -144,10 +143,9 @@ function _antsy_virtualenv {
 # show vi-mode
 function _antsy_vimode {
     if typeset -f vi_mode_prompt_info >/dev/null; then
-        local icon color color_alt
+        local icon color
         icon=${VIM_ICON}
         color=${VIM_COLOR}
-        color_alt=${MODE_INDICATOR}
 
         echo "${color}$(vi_mode_prompt_info)${icon}${endf} "
     fi

@@ -13,6 +13,8 @@
  __PATH_FORMAT=${ANTSY_PATH_FORMAT:-"%3~"}
  __GIT_ICON=${ANTSY_GIT_ICON:-" "}
  __GIT_COLOR=${ANTSY_GIT_COLOR:-"%B%F{red}"}
+ __GIT_SHA_COLOR=${ANTSY_GIT_SHA_COLOR:-"%B%F{red}"}
+ __GIT_STATE_COLOR=${ANTSY_GIT_STATE_COLOR:-"%B%F{red}"}
  __JOBS_ICON=${ANTSY_JOBS_ICON:-" "}
  __JOBS_COLOR=${ANTSY_JOBS_COLOR:-"%B%F{yellow}"}
  __TIME_ICON=${ANTSY_TIME_ICON:-""}
@@ -66,6 +68,7 @@ function _antsy_userhost {
         icon=${__ROOT_ICON}
         color=${__ROOT_COLOR}
     fi
+
     echo "${color}${icon}%n${color_host}@%m${endf} "
 }
 
@@ -82,15 +85,24 @@ function _antsy_path {
 # show git info (branch and status)
 function _antsy_gitinfo {
     if typeset -f git_prompt_info >/dev/null; then
-        local icon color
-        local branch state
+        local icon color state_color
+        local branch state commit
+        local sha_icon sha_color
         icon=${__GIT_ICON}
         color=${__GIT_COLOR}
         branch=$(git_prompt_info)
         state=$(git_prompt_status)
+        state_color=${__GIT_STATE_COLOR}
 
         if [[ -n $branch ]]; then
-            echo "${color}${icon}${branch}${state}${endf} "
+            if [[ -v ANTSY_GIT_SHA_ICON ]]; then
+                sha_icon=${ANTSY_GIT_SHA_ICON}
+                sha_color=${__GIT_SHA_COLOR}
+                sha_short=$(git_prompt_short_sha)
+                commit="${sha_color}${sha_icon}${sha_short}${endf}"
+            fi
+
+            echo "${color}${icon}${branch}${commit}${state_color}${state}${endf} "
         fi
     fi
 }

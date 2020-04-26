@@ -2,6 +2,8 @@
 #
 # optional plugins: git virtualenv vi-mode
 
+setopt prompt_subst
+
 # defaults
 typeset -A ANTSY
 ANTSY[USER_ICON]=""
@@ -256,15 +258,15 @@ function precmd {
 
 # [ virtualenv, vi-mode, prompt ], input, [ exit code ]
 # second line left
-PS1="$(_antsy_virtualenv)$(_antsy_vimode)$(_antsy_prompt)"
+PS1='$(_antsy_virtualenv)$(_antsy_vimode)$(_antsy_prompt)'
 
 # second line right
-RPS1="$(_antsy_status)"
+RPS1='$(_antsy_status)'
 
 # continuation dots
-PS2="$(_antsy_continue)"
+PS2='$(_antsy_continue)'
 
 # select
-PS3="$(_antsy_select)"
+PS3='$(_antsy_select)'
 
 # vim: set ft=zsh:

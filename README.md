@@ -6,9 +6,11 @@ Multiline `oh-my-zsh` theme with git info, virtualenv, vi-mode indicator, curren
 
 Every component of the prompt can now be customized with colors and "icons" (any glyph or character). 
 
-![Default](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo.png)Default
+![Default](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo.png)
+Default
 
-![Hideous example](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo2.png)Hideous example
+![Hideous example](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo2.png)
+Hideous example
 
 [![asciicast](https://asciinema.org/a/311469.svg)](https://asciinema.org/a/311469)
 

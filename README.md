@@ -6,11 +6,11 @@ Multiline `oh-my-zsh` theme with git info, virtualenv, vi-mode indicator, curren
 
 Every component of the prompt can now be customized with colors and "icons" (any glyph or character). 
 
-![Default](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo.png)
 Default
+![Default](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo.png)  
 
-![Hideous example](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo2.png)
 Hideous example
+![Hideous example](https://github.com/jeffmhubbard/antsy-zsh-theme/blob/assets/demo2.png)  
 
 [![asciicast](https://asciinema.org/a/311469.svg)](https://asciinema.org/a/311469)
 
@@ -51,7 +51,7 @@ ANTSY_ROOT_ICON=" %B%F{84}"
 ANTSY_ROOT_COLOR="%B%F{74}"
 ANTSY_PATH_ICON=" %B%F{136}"
 ANTSY_PATH_COLOR="%B%F{130}"
-ANTSY_PATH_FORMAT="%47<...<%~%<<% "
+ANTSY_PATH_FORMAT='%47<...<%~%<<% '
 ANTSY_GIT_ICON=" %B%F{171}"
 ANTSY_GIT_COLOR="%B%F{207}"
 ANTSY_GIT_SHA_ICON="|%B%F{54}"
@@ -70,7 +70,7 @@ ANTSY_VIM_COLOR="%B%F{111}"
 ANTSY_VIM_COLOR_ALT="%B%F{90}"
 ANTSY_PROMPT_ICON=" "
 ANTSY_PROMPT_COLOR="%B%F{137}"
-ANTSY_STATUS_ICON="%B%F{} "
+ANTSY_STATUS_ICON="%B%F{35} "
 ANTSY_STATUS_COLOR="%B%F{63}"
 ANTSY_CONTINUE_ICON="ﲖ "
 ANTSY_CONTINUE_COLOR="%B%F{193}"

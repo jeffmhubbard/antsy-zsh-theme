@@ -5,59 +5,47 @@
 setopt prompt_subst
 
 # defaults
-typeset -A ANTSY
-ANTSY[USER_ICON]=""
-ANTSY[USER_COLOR]="%B%F{green}"
-ANTSY[HOST_COLOR]="%B%F{green}"
-ANTSY[ROOT_ICON]=""
-ANTSY[ROOT_COLOR]="%B%F{red}"
-ANTSY[PATH_ICON]=""
-ANTSY[PATH_COLOR]="%B%F{blue}"
-ANTSY[PATH_FORMAT]="%3~"
-ANTSY[GIT_ICON]=" "
-ANTSY[GIT_COLOR]="%B%F{red}"
-ANTSY[GIT_SHA_COLOR]="%B%F{red}"
-ANTSY[GIT_STATE_COLOR]="%B%F{red}"
-ANTSY[JOBS_ICON]=" "
-ANTSY[JOBS_COLOR]="%B%F{yellow}"
-ANTSY[HISTORY_ICON]=""
-ANTSY[HISTORY_COLOR]="%B%F{black}"
-ANTSY[TIME_ICON]=""
-ANTSY[TIME_COLOR]="%B%F{black}"
-ANTSY[VENV_ICON]=""
-ANTSY[VENV_COLOR]="%B%F{cyan}"
-ANTSY[VIM_ICON]="➜"
-ANTSY[VIM_COLOR]="%B%F{white}"
-ANTSY[VIM_COLOR_ALT]="%F{cyan}"
-ANTSY[PROMPT_ICON]="%#"
-ANTSY[PROMPT_COLOR]="%B%F{white}"
-ANTSY[STATUS_ICON]="↵"
-ANTSY[STATUS_COLOR]="%B%F{red}"
-ANTSY[CONTINUE_ICON]="..."
-ANTSY[CONTINUE_COLOR]="%B%F{black}"
-ANTSY[SELECT_ICON]="➜ ?"
-ANTSY[SELECT_COLOR]="%B%F{white}"
-ANTSY[MARKER_COLOR]="%B%F{black}"
-
-# git
-ZSH_THEME_GIT_PROMPT_PREFIX=""
-ZSH_THEME_GIT_PROMPT_SUFFIX=""
-ZSH_THEME_GIT_PROMPT_DIRTY=""
-ZSH_THEME_GIT_PROMPT_CLEAN=""
-ZSH_THEME_GIT_PROMPT_ADDED=" ✚"
-ZSH_THEME_GIT_PROMPT_MODIFIED=" ●"
-ZSH_THEME_GIT_PROMPT_DELETED=" ✖"
-ZSH_THEME_GIT_PROMPT_RENAMED=" ➤"
-ZSH_THEME_GIT_PROMPT_UNMERGED=" ♦"
-ZSH_THEME_GIT_PROMPT_UNTRACKED=" ✱"
-ZSH_THEME_GIT_PROMPT_AHEAD=" ▲"
-
-# virtualenv
-ZSH_THEME_VIRTUALENV_PREFIX="("
-ZSH_THEME_VIRTUALENV_SUFFIX=")"
-
-# vi-mode
-MODE_INDICATOR=${ANTSY_VIM_COLOR_ALT:-$ANTSY[VIM_COLOR_ALT]}
+typeset -A ANTSY=( \
+    [USER_ICON]="" \
+    [USER_COLOR]="%B%F{green}" \
+    [HOST_COLOR]="%B%F{green}" \
+    [ROOT_ICON]="" \
+    [ROOT_COLOR]="%B%F{red}" \
+    [PATH_ICON]="" \
+    [PATH_COLOR]="%B%F{blue}" \
+    [PATH_FORMAT]="%3~" \
+    [GIT_ICON]=" " \
+    [GIT_COLOR]="%B%F{red}" \
+    [GIT_SHA_COLOR]="%B%F{red}" \
+    [GIT_STATE_COLOR]="%B%F{red}" \
+    [GIT_STATE_ADDED]=" ✚" \
+    [GIT_STATE_MODIFIED]=" ●" \
+    [GIT_STATE_DELETED]=" ✖" \
+    [GIT_STATE_RENAMED]=" ➤" \
+    [GIT_STATE_UNMERGED]=" ♦" \
+    [GIT_STATE_UNTRACKED]=" ✱" \
+    [GIT_STATE_AHEAD]=" ▲" \
+    [JOBS_ICON]=" " \
+    [JOBS_COLOR]="%B%F{yellow}" \
+    [HISTORY_ICON]="" \
+    [HISTORY_COLOR]="%B%F{black}" \
+    [TIME_ICON]="" \
+    [TIME_COLOR]="%B%F{black}" \
+    [VENV_ICON]="" \
+    [VENV_COLOR]="%B%F{cyan}" \
+    [VIM_ICON]="➜" \
+    [VIM_COLOR]="%B%F{white}" \
+    [VIM_COLOR_ALT]="%F{cyan}" \
+    [PROMPT_ICON]="%#" \
+    [PROMPT_COLOR]="%B%F{white}" \
+    [STATUS_ICON]="↵" \
+    [STATUS_COLOR]="%B%F{red}" \
+    [CONTINUE_ICON]="..." \
+    [CONTINUE_COLOR]="%B%F{black}" \
+    [SELECT_ICON]="➜ ?" \
+    [SELECT_COLOR]="%B%F{white}" \
+    [MARKER_COLOR]="%B%F{black}" \
+)
 
 # end string format
 endf="%f%b"
@@ -92,6 +80,18 @@ function _antsy_path {
 # ANTSY_GIT_SHA_ICON must be set to display commit hash
 function _antsy_gitinfo {
     if typeset -f git_prompt_info >/dev/null; then
+        typeset -g ZSH_THEME_GIT_PROMPT_PREFIX=""
+        typeset -g ZSH_THEME_GIT_PROMPT_SUFFIX=""
+        typeset -g ZSH_THEME_GIT_PROMPT_DIRTY=""
+        typeset -g ZSH_THEME_GIT_PROMPT_CLEAN=""
+        typeset -g ZSH_THEME_GIT_PROMPT_ADDED=${ANTSY_GIT_STATE_ADDED:-$ANTSY[GIT_STATE_ADDED]}
+        typeset -g ZSH_THEME_GIT_PROMPT_MODIFIED=${ANTSY_GIT_STATE_MODIFIED:-$ANTSY[GIT_STATE_MODIFIED]}
+        typeset -g ZSH_THEME_GIT_PROMPT_DELETED=${ANTSY_GIT_STATE_DELETED:-$ANTSY[GIT_STATE_DELETED]}
+        typeset -g ZSH_THEME_GIT_PROMPT_RENAMED=${ANTSY_GIT_STATE_RENAMED:-$ANTSY[GIT_STATE_RENAMED]}
+        typeset -g ZSH_THEME_GIT_PROMPT_UNMERGED=${ANTSY_GIT_STATE_UNMERGED:-$ANTSY[GIT_STATE_UNMERGED]}
+        typeset -g ZSH_THEME_GIT_PROMPT_UNTRACKED=${ANTSY_GIT_STATE_UNTRACKED:-$ANTSY[GIT_STATE_UNTRACKED]}
+        typeset -g ZSH_THEME_GIT_PROMPT_AHEAD=${ANTSY_GIT_STATE_AHEAD:-$ANTSY[GIT_STATE_AHEAD]}
+
         local icon color state_color
         local branch state commit
         local sha_icon sha_color
@@ -103,7 +103,7 @@ function _antsy_gitinfo {
 
         if [[ -n $branch ]]; then
             if [[ -v ANTSY_GIT_SHA_ICON ]]; then
-                sha_icon=${ANTSY_GIT_SHA_ICON]}
+                sha_icon=${ANTSY_GIT_SHA_ICON}
                 sha_color=${ANTSY_GIT_SHA_COLOR:-$ANTSY[GIT_SHA_COLOR]}
                 sha_short=$(git_prompt_short_sha)
                 commit="${sha_color}${sha_icon}${sha_short}${endf}"
@@ -152,7 +152,7 @@ function _antsy_virtualenv {
         local icon color venv
         icon=${ANTSY_VENV_ICON:-$ANTSY[VENV_ICON]}
         color=${ANTSY_VENV_COLOR:-$ANTSY[VENV_COLOR]}
-        venv="$(virtualenv_prompt_info | sed 's/[\)\(]//g')"
+        venv="$(virtualenv_prompt_info | sed 's/[][]//g')"
 
         if [[ -n $venv ]]; then
             echo "${color}${icon}${venv}${endf} "
@@ -163,6 +163,8 @@ function _antsy_virtualenv {
 # show vi-mode
 function _antsy_vimode {
     if typeset -f vi_mode_prompt_info >/dev/null; then
+        typeset -g MODE_INDICATOR=${ANTSY_VIM_COLOR_ALT:-$ANTSY[VIM_COLOR_ALT]}
+
         local icon color
         icon=${ANTSY_VIM_ICON:-$ANTSY[VIM_ICON]}
         color=${ANTSY_VIM_COLOR:-$ANTSY[VIM_COLOR]}

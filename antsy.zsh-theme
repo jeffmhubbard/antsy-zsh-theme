@@ -6,16 +6,18 @@ setopt prompt_subst
 
 # defaults
 typeset -A ANTSY=( \
-    [USER_ICON]="" \
+    [SSH_COLOR]="%B%F{yellow}" \
+    [SSH_ICON]="+" \
     [USER_COLOR]="%B%F{green}" \
+    [USER_ICON]="" \
     [HOST_COLOR]="%B%F{green}" \
-    [ROOT_ICON]="" \
     [ROOT_COLOR]="%B%F{red}" \
-    [PATH_ICON]="" \
+    [ROOT_ICON]="" \
     [PATH_COLOR]="%B%F{blue}" \
+    [PATH_ICON]="" \
     [PATH_FORMAT]="%3~" \
-    [GIT_ICON]=" " \
     [GIT_COLOR]="%B%F{red}" \
+    [GIT_ICON]=" " \
     [GIT_SHA_COLOR]="%B%F{red}" \
     [GIT_STATE_COLOR]="%B%F{red}" \
     [GIT_STATE_ADDED]=" ✚" \
@@ -25,36 +27,47 @@ typeset -A ANTSY=( \
     [GIT_STATE_UNMERGED]=" ♦" \
     [GIT_STATE_UNTRACKED]=" ✱" \
     [GIT_STATE_AHEAD]=" ▲" \
-    [JOBS_ICON]=" " \
     [JOBS_COLOR]="%B%F{yellow}" \
-    [HISTORY_ICON]="" \
+    [JOBS_ICON]=" " \
     [HISTORY_COLOR]="%B%F{black}" \
-    [TIME_ICON]="" \
+    [HISTORY_ICON]="" \
     [TIME_COLOR]="%B%F{black}" \
-    [VENV_ICON]="" \
+    [TIME_ICON]="" \
     [VENV_COLOR]="%B%F{cyan}" \
-    [VIM_ICON]="➜" \
+    [VENV_ICON]="" \
     [VIM_COLOR]="%B%F{white}" \
     [VIM_COLOR_ALT]="%F{cyan}" \
-    [PROMPT_ICON]="%#" \
+    [VIM_ICON]="➜" \
     [PROMPT_COLOR]="%B%F{white}" \
-    [STATUS_ICON]="↵" \
+    [PROMPT_ICON]="%#" \
     [STATUS_COLOR]="%B%F{red}" \
-    [CONTINUE_ICON]="..." \
+    [STATUS_ICON]="↵" \
     [CONTINUE_COLOR]="%B%F{black}" \
-    [SELECT_ICON]="➜ ?" \
+    [CONTINUE_ICON]="..." \
     [SELECT_COLOR]="%B%F{white}" \
+    [SELECT_ICON]="➜ ?" \
     [MARKER_COLOR]="%B%F{black}" \
 )
 
 # end string format
 endf="%f%b"
 
+# show icon for ssh connection
+function _antsy_sshconn {
+    local color icon
+    color=${ANTSY_SSH_COLOR:-$ANTSY[SSH_COLOR]}
+    icon=${ANTSY_SSH_ICON:-$ANTSY[SSH_ICON]}
+
+    if [[ -v SSH_CONNECTION ]]; then
+        echo "${color}${icon}${endf} "
+    fi
+}
+
 # show user and hostname (user@host)
 function _antsy_userhost {
-    local icon color color_host
-    icon=${ANTSY_USER_ICON:-$ANTSY[USER_ICON]}
+    local color icon color_host
     color=${ANTSY_USER_COLOR:-$ANTSY[USER_COLOR]}
+    icon=${ANTSY_USER_ICON:-$ANTSY[USER_ICON]}
     color_host=${ANTSY_HOST_COLOR:-$ANTSY[HOST_COLOR]}
 
     # detect root
@@ -68,9 +81,9 @@ function _antsy_userhost {
 
 # show current path
 function _antsy_path {
-    local icon color pathfmt
-    icon=${ANTSY_PATH_ICON:-$ANTSY[PATH_ICON]}
+    local color icon pathfmt
     color=${ANTSY_PATH_COLOR:-$ANTSY[PATH_COLOR]}
+    icon=${ANTSY_PATH_ICON:-$ANTSY[PATH_ICON]}
     pathfmt=${ANTSY_PATH_FORMAT:-$ANTSY[PATH_FORMAT]}
 
     echo "${color}${icon}${pathfmt}${endf} "
@@ -92,19 +105,19 @@ function _antsy_gitinfo {
         typeset -g ZSH_THEME_GIT_PROMPT_UNTRACKED=${ANTSY_GIT_STATE_UNTRACKED:-$ANTSY[GIT_STATE_UNTRACKED]}
         typeset -g ZSH_THEME_GIT_PROMPT_AHEAD=${ANTSY_GIT_STATE_AHEAD:-$ANTSY[GIT_STATE_AHEAD]}
 
-        local icon color state_color
+        local color icon state_color
         local branch state commit
         local sha_icon sha_color
-        icon=${ANTSY_GIT_ICON:-$ANTSY[GIT_ICON]}
         color=${ANTSY_GIT_COLOR:-$ANTSY[GIT_COLOR]}
+        icon=${ANTSY_GIT_ICON:-$ANTSY[GIT_ICON]}
         branch=$(git_prompt_info)
         state=$(git_prompt_status)
         state_color=${ANTSY_GIT_STATE_COLOR:-$ANTSY[GIT_STATE_COLOR]}
 
         if [[ -n $branch ]]; then
             if [[ -v ANTSY_GIT_SHA_ICON ]]; then
-                sha_icon=${ANTSY_GIT_SHA_ICON}
                 sha_color=${ANTSY_GIT_SHA_COLOR:-$ANTSY[GIT_SHA_COLOR]}
+                sha_icon=${ANTSY_GIT_SHA_ICON}
                 sha_short=$(git_prompt_short_sha)
                 commit="${sha_color}${sha_icon}${sha_short}${endf}"
             fi
@@ -116,9 +129,9 @@ function _antsy_gitinfo {
 
 # show background jobs
 function _antsy_jobs {
-    local icon color running
-    icon=${ANTSY_JOBS_ICON:-$ANTSY[JOBS_ICON]}
+    local color icon running
     color=${ANTSY_JOBS_COLOR:-$ANTSY[JOBS_COLOR]}
+    icon=${ANTSY_JOBS_ICON:-$ANTSY[JOBS_ICON]}
     running=$(jobs -l | wc -l)
 
     if [[ $running -ne 0 ]]; then
@@ -128,9 +141,9 @@ function _antsy_jobs {
 
 # show current history
 function _antsy_history {
-    local icon color running
-    icon=${ANTSY_HISTORY_ICON:-$ANTSY[HISTORY_ICON]}
+    local color icon running
     color=${ANTSY_HISTORY_COLOR:-$ANTSY[HISTORY_COLOR]}
+    icon=${ANTSY_HISTORY_ICON:-$ANTSY[HISTORY_ICON]}
 
     if [[ -v ANTSY_HISTORY_ICON ]]; then
         echo "${color}${icon}%!${endf} "
@@ -139,9 +152,9 @@ function _antsy_history {
 
 # show timestamp
 function _antsy_timestamp {
-    local icon color
-    icon=${ANTSY_TIME_ICON:-$ANTSY[TIME_ICON]}
+    local color icon
     color=${ANTSY_TIME_COLOR:-$ANTSY[TIME_COLOR]}
+    icon=${ANTSY_TIME_ICON:-$ANTSY[TIME_ICON]}
     
     echo "${color}${icon}%D{%H:%M:%S}${endf}"
 }
@@ -149,9 +162,10 @@ function _antsy_timestamp {
 # show python virtualenv
 function _antsy_virtualenv {
     if typeset -f virtualenv_prompt_info >/dev/null; then
-        local icon color venv
-        icon=${ANTSY_VENV_ICON:-$ANTSY[VENV_ICON]}
+        local color icon venv
         color=${ANTSY_VENV_COLOR:-$ANTSY[VENV_COLOR]}
+        icon=${ANTSY_VENV_ICON:-$ANTSY[VENV_ICON]}
+        # strip brackets
         venv="$(virtualenv_prompt_info | sed 's/[][]//g')"
 
         if [[ -n $venv ]]; then
@@ -165,9 +179,9 @@ function _antsy_vimode {
     if typeset -f vi_mode_prompt_info >/dev/null; then
         typeset -g MODE_INDICATOR=${ANTSY_VIM_COLOR_ALT:-$ANTSY[VIM_COLOR_ALT]}
 
-        local icon color
-        icon=${ANTSY_VIM_ICON:-$ANTSY[VIM_ICON]}
+        local color icon
         color=${ANTSY_VIM_COLOR:-$ANTSY[VIM_COLOR]}
+        icon=${ANTSY_VIM_ICON:-$ANTSY[VIM_ICON]}
 
         echo "${color}$(vi_mode_prompt_info)${icon}${endf} "
     fi
@@ -175,52 +189,52 @@ function _antsy_vimode {
 
 # show prompt
 function _antsy_prompt {
-    local icon color
-    icon=${ANTSY_PROMPT_ICON:-$ANTSY[PROMPT_ICON]}
+    local color icon
     color=${ANTSY_PROMPT_COLOR:-$ANTSY[PROMPT_COLOR]}
+    icon=${ANTSY_PROMPT_ICON:-$ANTSY[PROMPT_ICON]}
 
     echo "${color}${icon}${endf} "
 }
 
 # show exit status
 function _antsy_status {
-    local icon color
-    icon=${ANTSY_STATUS_ICON:-$ANTSY[STATUS_ICON]}
+    local color icon
     color=${ANTSY_STATUS_COLOR:-$ANTSY[STATUS_COLOR]}
+    icon=${ANTSY_STATUS_ICON:-$ANTSY[STATUS_ICON]}
 
     echo "${color}%(?..%? ${icon})${endf}"
 }
 
 # show continue prompt (PS2)
 function _antsy_continue {
-    local icon color
-    icon=${ANTSY_CONTINUE_ICON:-$ANTSY[CONTINUE_ICON]}
+    local color icon
     color=${ANTSY_CONTINUE_COLOR:-$ANTSY[CONTINUE_COLOR]}
+    icon=${ANTSY_CONTINUE_ICON:-$ANTSY[CONTINUE_ICON]}
 
     echo "${color}${icon}${endf} "
 }
 
 # show select prompt (PS3)
 function _antsy_select {
-    local icon color
-    icon=${ANTSY_SELECT_ICON:-$ANTSY[SELECT_ICON]}
+    local color icon
     color=${ANTSY_SELECT_COLOR:-$ANTSY[SELECT_COLOR]}
+    icon=${ANTSY_SELECT_ICON:-$ANTSY[SELECT_ICON]}
 
     echo "${color}${icon}${endf} "
 }
 
 # show output marker
 function _antsy_marker {
-    local icon color width
+    local color icon width
     local icon_len prefix_len
     local marker prefix
-    icon=${ANTSY_MARKER_ICON}
     color=${ANTSY_MARKER_COLOR:-$ANTSY[MARKER_COLOR]}
+    icon=${ANTSY_MARKER_ICON}
     width=$COLUMNS
     icon_len=$(echo -n "$icon" | wc -m)
 
     # if icon is more than one character
-    # recalculate width and set set prefix
+    # recalculate width and set prefix
     if [[ $icon_len -gt 1 ]]; then
         prefix_len=$((icon_len - 1))
         width=$((width - prefix_len))
@@ -243,9 +257,9 @@ function precmd {
         print -Pr "$(_antsy_marker)"
     fi
 
-    # [ user@host, pwd, git branch & status ], spacer, [ jobs, timestamp ]
+    # [ user@host, pwd, git info ], spacer, [ jobs, history, timestamp ]
     # first line left
-    prompt_left="$(_antsy_userhost)$(_antsy_path)$(_antsy_gitinfo)"
+    prompt_left="$(_antsy_sshconn)$(_antsy_userhost)$(_antsy_path)$(_antsy_gitinfo)"
 
     # first line right
     prompt_right="$(_antsy_jobs)$(_antsy_history)$(_antsy_timestamp)"
@@ -258,7 +272,7 @@ function precmd {
     print -Pr "$prompt_left${(l:$spacer:)}$prompt_right"
 }
 
-# [ virtualenv, vi-mode, prompt ], input, [ exit code ]
+# [ virtualenv, vi-mode, prompt ], input, [ exit status ]
 # second line left
 PS1='$(_antsy_virtualenv)$(_antsy_vimode)$(_antsy_prompt)'
 

@@ -6,13 +6,14 @@ setopt prompt_subst
 
 # defaults
 typeset -A ANTSY=( \
-    [SSH_COLOR]="%B%F{yellow}" \
-    [SSH_ICON]="+" \
     [USER_COLOR]="%B%F{green}" \
     [USER_ICON]="" \
-    [HOST_COLOR]="%B%F{green}" \
     [ROOT_COLOR]="%B%F{red}" \
     [ROOT_ICON]="" \
+    [HOST_COLOR]="%b%F{green}" \
+    [HOST_ICON]="@" \
+    [SSH_COLOR]="%F{yellow}" \
+    [SSH_ICON]="@" \
     [PATH_COLOR]="%B%F{blue}" \
     [PATH_ICON]="" \
     [PATH_FORMAT]="%3~" \
@@ -52,31 +53,28 @@ typeset -A ANTSY=( \
 # end string format
 endf="%f%b"
 
-# show icon for ssh connection
-function _antsy_sshconn {
-    local color icon
-    color=${ANTSY_SSH_COLOR:-$ANTSY[SSH_COLOR]}
-    icon=${ANTSY_SSH_ICON:-$ANTSY[SSH_ICON]}
-
-    if [[ -v SSH_CONNECTION ]]; then
-        echo "${color}${icon}${endf} "
-    fi
-}
-
-# show user and hostname (user@host)
+# # show icon for ssh connection
 function _antsy_userhost {
-    local color icon color_host
-    color=${ANTSY_USER_COLOR:-$ANTSY[USER_COLOR]}
-    icon=${ANTSY_USER_ICON:-$ANTSY[USER_ICON]}
-    color_host=${ANTSY_HOST_COLOR:-$ANTSY[HOST_COLOR]}
+    local user_color user_icon
+    local host_color host_icon
+    user_color=${ANTSY_USER_COLOR:-$ANTSY[USER_COLOR]}
+    user_icon=${ANTSY_USER_ICON:-$ANTSY[USER_ICON]}
+    host_color=${ANTSY_HOST_COLOR:-$ANTSY[HOST_COLOR]}
+    host_icon=${ANTSY_HOST_ICON:-$ANTSY[HOST_ICON]}
 
     # detect root
     if [ $UID -eq 0 ]; then
-        icon=${ANTSY_ROOT_ICON:-$ANTSY[ROOT_ICON]}
-        color=${ANTSY_ROOT_COLOR:-$ANTSY[ROOT_COLOR]}
+        user_color=${ANTSY_ROOT_COLOR:-$ANTSY[ROOT_COLOR]}
+        user_icon=${ANTSY_ROOT_ICON:-$ANTSY[ROOT_ICON]}
     fi
 
-    echo "${color}${icon}%n${color_host}@%m${endf} "
+    # detect ssh
+    if [ -v SSH_CONNECTION ]; then
+        host_color=${ANTSY_SSH_COLOR:-$ANTSY[SSH_COLOR]}
+        host_icon=${ANTSY_SSH_ICON:-$ANTSY[SSH_ICON]}
+    fi
+
+    echo "${user_color}${user_icon}%n${host_color}${host_icon}%m${endf} "
 }
 
 # show current path
@@ -259,7 +257,7 @@ function precmd {
 
     # [ user@host, pwd, git info ], spacer, [ jobs, history, timestamp ]
     # first line left
-    prompt_left="$(_antsy_sshconn)$(_antsy_userhost)$(_antsy_path)$(_antsy_gitinfo)"
+    prompt_left="$(_antsy_userhost)$(_antsy_path)$(_antsy_gitinfo)"
 
     # first line right
     prompt_right="$(_antsy_jobs)$(_antsy_history)$(_antsy_timestamp)"
